@@ -6,7 +6,7 @@
 /*   By: vfries <vfries@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/09 00:19:19 by vfries            #+#    #+#             */
-/*   Updated: 2023/01/09 03:13:41 by vfries           ###   ########lyon.fr   */
+/*   Updated: 2023/01/09 13:45:48 by vfries           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,23 @@
 #include "ft_linked_list.h"
 #include <stdlib.h>
 
-static void	solve(t_list_i **operands, int token)
+static void	solve(t_list_i **operands, t_list *tokens)
 {
 	int			result;
 	t_list_i	*tmp;
 
-	if (token == '+')
+	if (*operands == NULL || (*operands)->next == NULL)
+	{
+		ft_lsti_clear(operands);
+		ft_lstclear(&tokens, &free);
+		ft_printf("Number of operands is wrong\n");
+		exit(1);
+	}
+	if (((t_token *)tokens->content)->data == '+')
 		result = (*operands)->next->content + (*operands)->content;
-	else if (token == '-')
+	else if (((t_token *)tokens->content)->data == '-')
 		result = (*operands)->next->content - (*operands)->content;
-	else if (token == '*')
+	else if (((t_token *)tokens->content)->data == '*')
 		result = (*operands)->next->content * (*operands)->content;
 	else
 		result = (*operands)->next->content / (*operands)->content;
@@ -66,7 +73,7 @@ int	main(int argc, char **argv)
 	while (tokens != NULL)
 	{
 		if (((t_token *)tokens->content)->type == OPERATOR)
-			solve(&operands, ((t_token *)tokens->content)->data);
+			solve(&operands, tokens);
 		else
 			add_operand(&operands, &tokens);
 		tokens = ft_lst_get_next_free_current(tokens, &free);
