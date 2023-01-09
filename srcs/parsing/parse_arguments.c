@@ -6,11 +6,56 @@
 /*   By: vfries <vfries@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/09 00:34:06 by vfries            #+#    #+#             */
-/*   Updated: 2023/01/09 00:51:33 by vfries           ###   ########lyon.fr   */
+/*   Updated: 2023/01/09 02:51:49 by vfries           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "tokens.h"
+#include "parsing.h"
 #include "ft_linked_list.h"
+#include "ft_numbers.h"
+#include "ft_io.h"
+#include <stdlib.h>
+
+static void	add_number(t_list **tokens, t_list **operators, char *args)
+{
+	t_token	*new_token;
+	t_list	*new_node;
+
+	new_token = malloc(sizeof(t_token));
+	if (new_token == NULL)
+	{
+		ft_lstclear(tokens, &free);
+		ft_lstclear(operators, &free);
+		exit(1);
+	}
+	new_token->type = NUMBER;
+	new_token->data = ft_atoi(args);
+	new_node = ft_lstnew(new_token);
+	if (new_node == NULL)
+	{
+		free(new_token);
+		ft_lstclear(tokens, &free);
+		ft_lstclear(operators, &free);
+		exit(1);
+	}
+	ft_lstadd_front(tokens, new_node);
+}
+
+static void	push_all_operators(t_list **tokens, t_list **operators)
+{
+	while (*operators != NULL)
+	{
+		if (((t_token *)(*operators)->content)->type == PARENTHESES)
+		{
+			ft_lstclear(tokens, &free);
+			ft_lstclear(operators, &free);
+			ft_putstr(PARENTHES_ERROR);
+			exit(1);
+		}
+		ft_lst_push(tokens, operators);
+	}
+}
 
 t_list	*parse_arguments(char *args)
 {
@@ -22,25 +67,18 @@ t_list	*parse_arguments(char *args)
 	while (*args != '\0')
 	{
 		if (is_an_operator(args))
-			add_operator(&tokens, operators, *args);
-		else if - a left parenthesis (i.e. "("):
-			push it onto the operator stack
-		else if - a right parenthesis (i.e. ")"):
-			while the operator at the top of the operator stack is not a left parenthesis:
-				{assert the operator stack is not empty}
-				/* If the stack runs out without finding a left parenthesis, then there are mismatched parentheses. */
-				pop the operator from the operator stack into the output queue
-			{assert there is a left parenthesis at the top of the operator stack}
-			pop the left parenthesis from the operator stack and discard it
-			if there is a function token at the top of the operator stack, then:
-				pop the function from the operator stack into the output queue
-		else // if (is_a_number(args))
-			put it into the output queue
+			add_operator(&tokens, &operators, *args);
+		else if (is_parenthes(args) == 1)
+			open_parenthes(&tokens, &operators);
+		else if (is_parenthes(args) == 2)
+			close_parenthes(&tokens, &operators);
+		else
+			add_number(&tokens, &operators, args);
+		while (*args != '\0' && *args != ' ')
+			args++;
+		if (*args != '\0')
+			args++;
 	}
-	/* After the while loop, pop the remaining items from the operator stack into the output queue. */
-	while there are tokens on the operator stack:
-		/* If the operator token on the top of the stack is a parenthesis, then there are mismatched parentheses. */
-		{assert the operator on top of the stack is not a (left) parenthesis}
-		pop the operator from the operator stack onto the output queue
-
+	push_all_operators(&tokens, &operators);
+	return (ft_lst_reverse(&tokens));
 }

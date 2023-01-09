@@ -4,6 +4,8 @@ NAME_DEBUG =	${NAME}_debug
 
 
 H_FILES =\
+	parsing.h	\
+	tokens.h
 
 HEADERS =\
 			${addprefix includes/, ${H_FILES}}
@@ -16,12 +18,18 @@ INCLUDES =\
 SRCS_DIR = srcs/
 
 SRCS =\
+	parsing/operators.c			\
+	parsing/parenthes.c			\
+	parsing/parse_arguments.c	\
+\
+	main.c
 
 
 
 TEST_DIR = test/
 
 SRCS_TEST =\
+		includes/parsing.h.c	\
 		includes/tokens.h.c
 
 
