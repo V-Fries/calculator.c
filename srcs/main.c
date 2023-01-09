@@ -6,7 +6,7 @@
 /*   By: vfries <vfries@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/09 00:19:19 by vfries            #+#    #+#             */
-/*   Updated: 2023/01/09 03:11:58 by vfries           ###   ########lyon.fr   */
+/*   Updated: 2023/01/09 03:13:41 by vfries           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 #include "ft_linked_list.h"
 #include <stdlib.h>
 
-static void solve(t_list_i **operands, int token)
+static void	solve(t_list_i **operands, int token)
 {
-	int result;
-	t_list_i *tmp;
+	int			result;
+	t_list_i	*tmp;
 
 	if (token == '+')
 		result = (*operands)->next->content + (*operands)->content;
@@ -35,8 +35,9 @@ static void solve(t_list_i **operands, int token)
 	(*operands)->content = result;
 }
 
-static void add_operand(t_list_i **operands, t_list **tokens){
-	t_list_i *new;
+static void	add_operand(t_list_i **operands, t_list **tokens)
+{
+	t_list_i	*new;
 
 	new = malloc(sizeof(t_list_i));
 	if (new == NULL)
